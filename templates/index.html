@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Fraud Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Credit Card Fraud Detection</h1>
+            <p>Enter transaction details to check for fraud.</p>
+        </header>
+
+        <main>
+            <form id="predictionForm">
+                <div class="form-group">
+                    <label for="Time">Time (seconds since first transaction)</label>
+                    <input type="number" id="Time" name="Time" step="any" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Amount">Transaction Amount</label>
+                    <input type="number" id="Amount" name="Amount" step="any" required>
+                </div>
+
+                <div class="features-grid">
+                    <!-- V1 to V28 inputs generated via loop for brevity in code, but explicit here -->
+                    <!-- Using a script to generate these might be cleaner, but I'll write them out for clarity -->
+                    
+                    <div class="feature-group">
+                        <h3>V Features (Anonymized)</h3>
+                        <div class="grid-container">
+                            <!-- Generating inputs V1 to V28 -->
+                            <div class="input-wrapper"><label for="V1">V1</label><input type="number" id="V1" name="V1" step="any" required></div>
+                            <div class="input-wrapper"><label for="V2">V2</label><input type="number" id="V2" name="V2" step="any" required></div>
+                            <div class="input-wrapper"><label for="V3">V3</label><input type="number" id="V3" name="V3" step="any" required></div>
+                            <div class="input-wrapper"><label for="V4">V4</label><input type="number" id="V4" name="V4" step="any" required></div>
+                            <div class="input-wrapper"><label for="V5">V5</label><input type="number" id="V5" name="V5" step="any" required></div>
+                            <div class="input-wrapper"><label for="V6">V6</label><input type="number" id="V6" name="V6" step="any" required></div>
+                            <div class="input-wrapper"><label for="V7">V7</label><input type="number" id="V7" name="V7" step="any" required></div>
+                            <div class="input-wrapper"><label for="V8">V8</label><input type="number" id="V8" name="V8" step="any" required></div>
+                            <div class="input-wrapper"><label for="V9">V9</label><input type="number" id="V9" name="V9" step="any" required></div>
+                            <div class="input-wrapper"><label for="V10">V10</label><input type="number" id="V10" name="V10" step="any" required></div>
+                            <div class="input-wrapper"><label for="V11">V11</label><input type="number" id="V11" name="V11" step="any" required></div>
+                            <div class="input-wrapper"><label for="V12">V12</label><input type="number" id="V12" name="V12" step="any" required></div>
+                            <div class="input-wrapper"><label for="V13">V13</label><input type="number" id="V13" name="V13" step="any" required></div>
+                            <div class="input-wrapper"><label for="V14">V14</label><input type="number" id="V14" name="V14" step="any" required></div>
+                            <div class="input-wrapper"><label for="V15">V15</label><input type="number" id="V15" name="V15" step="any" required></div>
+                            <div class="input-wrapper"><label for="V16">V16</label><input type="number" id="V16" name="V16" step="any" required></div>
+                            <div class="input-wrapper"><label for="V17">V17</label><input type="number" id="V17" name="V17" step="any" required></div>
+                            <div class="input-wrapper"><label for="V18">V18</label><input type="number" id="V18" name="V18" step="any" required></div>
+                            <div class="input-wrapper"><label for="V19">V19</label><input type="number" id="V19" name="V19" step="any" required></div>
+                            <div class="input-wrapper"><label for="V20">V20</label><input type="number" id="V20" name="V20" step="any" required></div>
+                            <div class="input-wrapper"><label for="V21">V21</label><input type="number" id="V21" name="V21" step="any" required></div>
+                            <div class="input-wrapper"><label for="V22">V22</label><input type="number" id="V22" name="V22" step="any" required></div>
+                            <div class="input-wrapper"><label for="V23">V23</label><input type="number" id="V23" name="V23" step="any" required></div>
+                            <div class="input-wrapper"><label for="V24">V24</label><input type="number" id="V24" name="V24" step="any" required></div>
+                            <div class="input-wrapper"><label for="V25">V25</label><input type="number" id="V25" name="V25" step="any" required></div>
+                            <div class="input-wrapper"><label for="V26">V26</label><input type="number" id="V26" name="V26" step="any" required></div>
+                            <div class="input-wrapper"><label for="V27">V27</label><input type="number" id="V27" name="V27" step="any" required></div>
+                            <div class="input-wrapper"><label for="V28">V28</label><input type="number" id="V28" name="V28" step="any" required></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="predictBtn">Detect Fraud</button>
+            </form>
+
+            <div id="result" class="hidden">
+                <h2>Result</h2>
+                <p id="predictionText"></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            const resultDiv = document.getElementById('result');
+            const predictionText = document.getElementById('predictionText');
+            const btn = document.getElementById('predictBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    resultDiv.classList.remove('hidden');
+                    predictionText.textContent = result.prediction_text;
+                    
+                    if (result.is_fraud) {
+                        resultDiv.className = 'fraud';
+                    } else {
+                        resultDiv.className = 'normal';
+                    }
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while processing the request.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Detect Fraud';
+            }
+        });
+        
+        // Optional: Fill with random values for testing
+        // window.onload = () => {
+        //     const inputs = document.querySelectorAll('input[type="number"]');
+        //     inputs.forEach(input => input.value = (Math.random() * 2 - 1).toFixed(4));
+        //     document.getElementById('Time').value = Math.floor(Math.random() * 10000);
+        //     document.getElementById('Amount').value = (Math.random() * 1000).toFixed(2);
+        // }
+    </script>
+</body>
+</html>
